@@ -1,24 +1,42 @@
-# Logs
-logs
-*.log
+# dependencies
+node_modules/
+
+# build outputs
+dist/
+dist-electron/
+out/
+release/
+build/
+
+# env
+.env
+.env.local
+.env.*.local
+
+# logs
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
-lerna-debug.log*
 
-node_modules
-dist
-dist-ssr
-*.local
+# OS
+.DS_Store
+Thumbs.db
 
-# Editor directories and files
+# IDE
 .vscode/*
 !.vscode/extensions.json
-.idea
-.DS_Store
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
+!.vscode/settings.json
+.idea/
+
+# Electron builder
+*.dmg
+*.exe
+*.AppImage
+*.deb
+*.rpm
+*.blockmap
+
+# cache
+.cache/
+.parcel-cache/

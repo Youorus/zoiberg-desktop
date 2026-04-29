@@ -1,5 +1,6 @@
 import { contextBridge } from "electron";
 import {createAnalysisPreloadApi} from "@/features/analysis/preload/analysis.preload.ts";
+import { createFilesPreloadApi } from "@/features/files/preload/files.preload";
 
 /**
  * Point d’entrée preload principal.
@@ -15,6 +16,7 @@ import {createAnalysisPreloadApi} from "@/features/analysis/preload/analysis.pre
  */
 const zoibergApi = {
   analysis: createAnalysisPreloadApi(),
+  files: createFilesPreloadApi()
 };
 
 contextBridge.exposeInMainWorld("zoiberg", zoibergApi);

@@ -1,4 +1,5 @@
 import {AnalysisPreloadApi} from "@/features/analysis/preload/analysis.preload.ts";
+import { FilesPreloadApi } from "@/features/files/preload/files.preload";
 
 
 /**
@@ -9,4 +10,5 @@ import {AnalysisPreloadApi} from "@/features/analysis/preload/analysis.preload.t
  */
 export type ZoibergApi = {
   analysis: AnalysisPreloadApi;
+  files: FilesPreloadApi;
 };

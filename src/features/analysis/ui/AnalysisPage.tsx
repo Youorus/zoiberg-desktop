@@ -1,45 +1,13 @@
 import { useState } from "react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useExportReport } from "../../report/hooks/useExportReport";
 import type { AnalyzeImageInput } from "../types/analysis.types";
 import { useAnalyzeImage } from "../hooks/useAnalyzeImage";
+import { AnalysisResultCard } from "./AnalysisResultCard";
 import { AnalysisResultSkeleton } from "./AnalysisResultSkeleton";
-
-/**
- * MODULE: Analysis
- * FILE: AnalysisPage.tsx
- *
- * Rôle du fichier :
- * -----------------
- * Page principale de la feature analyse.
- *
- * Elle orchestre le parcours utilisateur :
- * ---------------------------------------
- * 1. L’utilisateur sélectionne une image
- * 2. L’image est affichée
- * 3. L’utilisateur clique sur "Lancer l’analyse IA"
- * 4. Le hook useAnalyzeImage appelle window.zoiberg.analysis.analyzeImage()
- * 5. Pendant l’analyse, on affiche AnalysisResultSkeleton
- * 6. Quand le résultat arrive, on affiche AnalysisResultCard
- * 7. L’analyste peut ajouter un commentaire
- *
- * Ce fichier peut appeler :
- * -------------------------
- * - window.zoiberg.files.selectImage()
- *   pour sélectionner une image
- *
- * Mais il ne devrait pas appeler directement :
- * --------------------------------------------
- * - ipcRenderer
- * - ipcMain
- * - analysis.service.ts
- *
- * Pourquoi ?
- * ----------
- * Parce que React ne doit pas connaître les détails internes Electron.
- * React parle uniquement avec l’API exposée par preload :
- * window.zoiberg.*
- */
+import { CommentBox } from "./CommentBox";
 
 type AnalysisPageProps = {
   onBack: () => void;
@@ -47,47 +15,40 @@ type AnalysisPageProps = {
 
 export function AnalysisPage({ onBack }: AnalysisPageProps) {
   const [image, setImage] = useState<AnalyzeImageInput | null>(null);
-
-  /**
-   * État local destiné au commentaire de l’analyste.
-   *
-   * Pour le moment, CommentBox est commenté dans le JSX plus bas.
-   * Donc cette variable n’est pas encore utilisée visuellement.
-   *
-   * Quand tu réactiveras CommentBox, ce state permettra de stocker
-   * le texte saisi par l’utilisateur.
-   */
+  const [comment, setComment] = useState("");
 
   const analyzeImageMutation = useAnalyzeImage();
-
+  const exportReportMutation = useExportReport();
   const result = analyzeImageMutation.data ?? null;
 
   async function handleSelectImage() {
-    /**
-     * Ici, React demande au preload d’appeler Electron.
-     *
-     * React ne va pas lire le disque directement.
-     * Il appelle seulement :
-     * window.zoiberg.files.selectImage()
-     */
     const selected = await window.zoiberg.files.selectImage();
-
     if (!selected) return;
 
     setImage(selected);
+    setComment("");
     analyzeImageMutation.reset();
   }
 
   function handleAnalyze() {
     if (!image) return;
-
-    /**
-     * mutate déclenche le hook useAnalyzeImage.
-     *
-     * Le hook appelle ensuite :
-     * window.zoiberg.analysis.analyzeImage(image)
-     */
     analyzeImageMutation.mutate(image);
+  }
+
+  async function handleExport() {
+    if (!image || !result) return;
+
+    try {
+      const exported = await exportReportMutation.mutateAsync({
+        image,
+        result,
+        comment
+      });
+      toast.success(`Rapport exporte: ${exported.path}`);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Erreur d'export PDF.";
+      toast.error(message);
+    }
   }
 
   return (
@@ -97,13 +58,13 @@ export function AnalysisPage({ onBack }: AnalysisPageProps) {
           className="mb-3 text-sm text-slate-400 hover:text-slate-200"
           onClick={onBack}
         >
-          ← Retour
+          Retour
         </button>
 
         <h1 className="text-3xl font-bold">Nouvelle analyse</h1>
 
         <p className="mt-2 text-slate-400">
-          Importez une image, lancez l’analyse IA, puis consultez le résultat.
+          Importez une image, lancez l'analyse IA, puis consultez le resultat.
         </p>
       </header>
 
@@ -117,7 +78,7 @@ export function AnalysisPage({ onBack }: AnalysisPageProps) {
             {!image ? (
               <div className="flex min-h-[360px] flex-col items-center justify-center rounded-2xl border border-dashed border-slate-700 bg-slate-950/60 p-8 text-center">
                 <p className="mb-4 text-slate-300">
-                  Sélectionnez une image de scanner pulmonaire.
+                  Selectionnez une image de scanner pulmonaire.
                 </p>
 
                 <Button onClick={handleSelectImage}>Importer une image</Button>
@@ -160,7 +121,7 @@ export function AnalysisPage({ onBack }: AnalysisPageProps) {
                 >
                   {analyzeImageMutation.isPending
                     ? "Analyse en cours..."
-                    : "Lancer l’analyse IA"}
+                    : "Lancer l'analyse IA"}
                 </Button>
               </div>
             )}
@@ -169,7 +130,7 @@ export function AnalysisPage({ onBack }: AnalysisPageProps) {
 
         <Card className="border-slate-800 bg-slate-900/70 text-slate-50">
           <CardHeader>
-            <CardTitle>Résultat</CardTitle>
+            <CardTitle>Resultat</CardTitle>
           </CardHeader>
 
           <CardContent>
@@ -177,53 +138,28 @@ export function AnalysisPage({ onBack }: AnalysisPageProps) {
 
             {!analyzeImageMutation.isPending && !result && (
               <p className="text-slate-400">
-                Le résultat apparaîtra ici après analyse.
+                Le resultat apparaitra ici apres analyse.
               </p>
             )}
 
             {!analyzeImageMutation.isPending && result && (
               <div className="space-y-6">
-                {/*
-                  Ces deux composants sont volontairement commentés pour le moment.
+                <AnalysisResultCard result={result} />
+                <CommentBox value={comment} onChange={setComment} />
 
-                  Quand ils seront créés/importés, tu pourras les réactiver.
-
-                  1. AnalysisResultCard
-                     Sert à afficher le résultat de l’analyse IA :
-                     - statut : sain, malade ou incertain
-                     - score de confiance
-                     - explication retournée par le modèle
-                     - version du modèle
-
-                     Import à ajouter en haut du fichier :
-                     import { AnalysisResultCard } from "./AnalysisResultCard";
-
-                     Utilisation :
-                     <AnalysisResultCard result={result} />
-
-                  2. CommentBox
-                     Sert à afficher une zone de texte permettant à l’analyste
-                     ou au chirurgien d’ajouter ses propres observations.
-
-                     Import à ajouter en haut du fichier :
-                     import { CommentBox } from "./CommentBox";
-
-                     Utilisation :
-                     <CommentBox value={comment} onChange={setComment} />
-
-                  Une fois ces composants réactivés, le state suivant sera utilisé :
-                  const [comment, setComment] = useState("");
-                */}
-
-                {/*
-                  <AnalysisResultCard result={result} />
-
-                  <CommentBox value={comment} onChange={setComment} />
-                */}
+                <Button
+                  className="w-full"
+                  onClick={handleExport}
+                  disabled={exportReportMutation.isPending}
+                >
+                  {exportReportMutation.isPending
+                    ? "Export en cours..."
+                    : "Exporter le rapport PDF"}
+                </Button>
 
                 <p className="rounded-lg border border-amber-500/30 bg-amber-500/10 p-3 text-sm text-amber-100">
-                  Ce résultat est une aide à l’interprétation et ne remplace pas
-                  l’avis d’un professionnel de santé qualifié.
+                  Ce resultat est une aide a l'interpretation et ne remplace pas
+                  l'avis d'un professionnel de sante qualifie.
                 </p>
               </div>
             )}

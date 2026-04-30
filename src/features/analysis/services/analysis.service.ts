@@ -43,7 +43,7 @@ import { externalModelResponseSchema } from "../schemas/analysis.schema";
 export async function analyzeLungImage(
   image: AnalyzeImageInput
 ): Promise<AnalysisResult> {
-  const useMock = import.meta.env?.VITE_ENABLE_MOCK_AI !== "false";
+  const useMock = process.env.VITE_ENABLE_MOCK_AI !== "false";
 
   if (useMock) {
     return analyzeWithMockModel(image);
@@ -105,7 +105,7 @@ async function analyzeWithMockModel(
 async function analyzeWithRemoteModel(
   image: AnalyzeImageInput
 ): Promise<AnalysisResult> {
-  const apiUrl = import.meta.env.VITE_MODEL_API_URL;
+  const apiUrl = process.env.VITE_MODEL_API_URL;
 
   if (!apiUrl) {
     throw new Error("VITE_MODEL_API_URL n’est pas configuré.");

@@ -1,7 +1,8 @@
 import { app, BrowserWindow, shell } from "electron";
 import { join } from "path";
-import { registerAnalysisIpc } from "@/features/analysis";
-import { registerFilesIpc } from "@/features/files";
+import { registerAnalysisIpc } from "./features/analysis/ipc/analysis.ipc";
+import { registerFilesIpc } from "./features/files/ipc/files.ipc";
+import { registerReportIpc } from "./features/report/ipc/report.ipc";
 
 function createWindow(): void {
   const mainWindow = new BrowserWindow({
@@ -45,6 +46,7 @@ function createWindow(): void {
 app.whenReady().then(() => {
   registerAnalysisIpc();
   registerFilesIpc();
+  registerReportIpc();
 
   createWindow();
 

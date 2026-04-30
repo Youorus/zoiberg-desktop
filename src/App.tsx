@@ -1,6 +1,6 @@
 import { useState } from "react";
 import {HomePage} from "./features/home/HomePage.tsx";
-import { AnalysisPage } from "./features/analysis";
+import { AnalysisPage } from "./features/analysis/ui/AnalysisPage";
 
 
 type Screen = "home" | "analysis";

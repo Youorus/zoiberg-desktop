@@ -1,12 +1,14 @@
+import type { ReactNode } from "react";
 import { Activity, Brain, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 
 type HomePageProps = {
   onStart: () => void;
+  onExport: () => void;
 };
 
-export function HomePage({ onStart }: HomePageProps) {
+export function HomePage({ onStart, onExport }: HomePageProps) {
   return (
     <main className="min-h-screen w-full overflow-x-hidden px-4 py-8 sm:px-6 lg:px-8">
       <section className="mx-auto flex min-h-screen w-full max-w-6xl flex-col justify-center">
@@ -31,12 +33,21 @@ export function HomePage({ onStart }: HomePageProps) {
             pas un diagnostic médical.
           </p>
 
-          <Button
-            className="mt-8 h-12 w-full px-6 text-base sm:w-auto"
-            onClick={onStart}
-          >
-            Commencer une analyse
-          </Button>
+          <div className="mt-8 flex gap-4">
+            <Button
+              className="h-12 px-6 text-base"
+              onClick={onStart}
+            >
+              Commencer une analyse
+            </Button>
+            <Button
+              variant="outline"
+              className="h-12 px-6 text-base"
+              onClick={onExport}
+            >
+              Tester l'Export
+            </Button>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -68,7 +79,7 @@ function FeatureCard({
   title,
   description
 }: {
-  icon: React.ReactNode;
+  icon: ReactNode;
   title: string;
   description: string;
 }) {

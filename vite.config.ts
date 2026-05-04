@@ -10,10 +10,10 @@ export default defineConfig({
     tailwindcss(),
     electron({
       main: {
-        entry: "src/index.ts",
+        entry: "electron/main.ts",
       },
       preload: {
-        input: "src/preload/index.ts",
+        input: "electron/preload.ts",
       },
       renderer: {},
     }),

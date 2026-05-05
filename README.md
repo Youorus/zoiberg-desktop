@@ -79,7 +79,7 @@ src/
 │   └── ui/
 │
 ├── preload/
-│   ├── index.ts
+│   ├── index.cjs
 │   └── api.types.ts
 │
 ├── shared/
@@ -89,7 +89,7 @@ src/
 ├── types/
 │   └── global.d.ts
 │
-├── index.ts
+├── index.cjs
 ├── main.tsx
 ├── index.css
 └── vite-env.d.ts
@@ -133,7 +133,7 @@ modules/analysis/
 ├── services/
 ├── schemas/
 ├── types/
-└── index.ts
+└── index.cjs
 ```
 
 ---
@@ -193,7 +193,7 @@ analysis/
 │   └── analysis.schema.ts
 ├── types/
 │   └── analysis.types.ts
-└── index.ts
+└── index.cjs
 ```
 
 ---
@@ -228,7 +228,7 @@ report/
 │   └── report.schema.ts
 ├── types/
 │   └── report.types.ts
-└── index.ts
+└── index.cjs
 ```
 
 ---
@@ -693,9 +693,9 @@ const image = analyzeImageInputSchema.parse(input);
 
 ---
 
-### 4. Centraliser les exports dans `index.ts`
+### 4. Centraliser les exports dans `index.cjs`
 
-Chaque module doit exposer ses éléments publics depuis son `index.ts`.
+Chaque module doit exposer ses éléments publics depuis son `index.cjs`.
 
 Exemple :
 

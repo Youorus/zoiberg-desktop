@@ -18,7 +18,11 @@ contextBridge.exposeInMainWorld('ipcRenderer', {
     const [channel, ...omit] = args
     return ipcRenderer.invoke(channel, ...omit)
   },
+})
 
-  // You can expose other APTs you need here.
-  // ...
+contextBridge.exposeInMainWorld('zoiberg', {
+  analysis: {
+    predict: (filePath: string) => ipcRenderer.invoke('analysis:predict', filePath),
+    generateReport: (comment: string) => ipcRenderer.invoke('analysis:report', comment),
+  }
 })

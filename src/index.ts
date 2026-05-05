@@ -1,32 +1,39 @@
 import { app, BrowserWindow, shell } from "electron";
-import { join } from "path";
-import { registerAnalysisIpc } from "@/features/analysis";
+import { join, dirname } from "path";
+import { fileURLToPath } from "url";
+import { registerAnalysisIPC } from "./features/analysis/analysis.ipc";
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+let mainWindow: BrowserWindow | null = null;
+const isDev = !!process.env.ELECTRON_RENDERER_URL;
 function createWindow(): void {
-  const mainWindow = new BrowserWindow({
+  mainWindow = new BrowserWindow({
     width: 1280,
     height: 820,
-
     minWidth: 720,
     minHeight: 560,
-
-    maxWidth: 1440,
-    maxHeight: 960,
-
-    title: "Zoiberg",
+    title: "Zoidberg 2.0",
     backgroundColor: "#020617",
     show: false,
+    autoHideMenuBar: true,
 
-    webPreferences: {
-      preload: join(__dirname, "../preload/index.js"),
-      sandbox: false,
-      contextIsolation: true,
-      nodeIntegration: false
-    }
+webPreferences: {
+  preload: isDev
+    ? join(process.cwd(), "src/preload/index.cjs")
+    : join(__dirname, "preload/index.js"),
+  contextIsolation: true,
+  nodeIntegration: false,
+  sandbox: false,
+}
   });
 
-  mainWindow.on("ready-to-show", () => {
+  mainWindow.once("ready-to-show", () => {
+    if (!mainWindow) return;
     mainWindow.show();
+    mainWindow.maximize();
+    mainWindow.webContents.openDevTools();
   });
 
   mainWindow.webContents.setWindowOpenHandler(({ url }) => {
@@ -39,18 +46,19 @@ function createWindow(): void {
   } else {
     mainWindow.loadFile(join(__dirname, "../renderer/index.html"));
   }
+
+  mainWindow.on("closed", () => {
+    mainWindow = null;
+  });
 }
 
 app.whenReady().then(() => {
-  registerAnalysisIpc();
+  console.log("🚀 Electron main process started");
+
+  registerAnalysisIPC();
+  console.log("✅ IPC registered");
 
   createWindow();
-
-  app.on("activate", () => {
-    if (BrowserWindow.getAllWindows().length === 0) {
-      createWindow();
-    }
-  });
 });
 
 app.on("window-all-closed", () => {

@@ -1,12 +1,26 @@
-import type { ZoibergApi } from "@/preload/api.types";
+import type {
+  ModelType,
+  PredictionResponse,
+  HealthResponse,
+  CurrentModelResponse,
+  SwitchModelResponse,
+  ReportResponse,
+} from "@/lib/api.types";
 
 declare global {
   interface Window {
-    /**
-     * API sécurisée exposée via Electron preload
-     * Permet de communiquer avec le main process
-     */
-    zoiberg: ZoibergApi;
+    zoiberg: {
+      getApiUrl: () => Promise<{ url: string }>;
+      setApiUrl: (url: string) => Promise<{ url: string }>;
+      health: () => Promise<HealthResponse>;
+      predict: (filePath: string) => Promise<PredictionResponse>;
+      generateReport: (
+        predictionData: PredictionResponse,
+        comment: string
+      ) => Promise<ReportResponse>;
+      getModel: () => Promise<CurrentModelResponse>;
+      setModel: (modelName: ModelType) => Promise<SwitchModelResponse>;
+    };
   }
 }
 

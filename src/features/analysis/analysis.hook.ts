@@ -7,18 +7,10 @@ export const useAnalysis = () => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    console.log("🔥 useAnalysis déclenché");
-    console.log("📁 uploadedFile:", uploadedFile);
-    console.log("🧠 window.zoiberg:", window.zoiberg);
-
-    if (!uploadedFile) {
-      console.warn("⚠️ Aucun fichier uploadé, arrêt de l’analyse");
-      return;
-    }
+    if (!uploadedFile) return;
 
     if (!window.zoiberg?.predict) {
-      console.error("❌ window.zoiberg.predict est introuvable");
-      setError("API Electron indisponible.");
+      setError("API Electron non disponible. Vérifiez la connexion.");
       return;
     }
 
@@ -28,51 +20,39 @@ export const useAnalysis = () => {
     const runAnalysis = async () => {
       try {
         setError(null);
-        setProgress(0);
-
-        console.log("⏳ Démarrage simulation de progression");
+        setProgress(5);
 
         interval = setInterval(() => {
-          setProgress((prev) => {
-            const next = prev >= 90 ? prev : prev + 5;
-            console.log("📊 Progression:", next);
-            return next;
-          });
-        }, 200);
-
-        console.log("📤 Appel IPC predict avec fichier:", uploadedFile.path);
+          setProgress((prev) => (prev >= 90 ? prev : prev + Math.random() * 8));
+        }, 300);
 
         const result = await window.zoiberg.predict(uploadedFile.path);
 
-        console.log("📥 Résultat reçu depuis API:", result);
-
         if (!isMounted) return;
-
         clearInterval(interval);
-
         setProgress(100);
         setAnalysisResult(result);
 
-        console.log("✅ Analyse terminée, redirection vers result");
-
         setTimeout(() => {
           if (isMounted) setView("result");
-        }, 400);
+        }, 500);
       } catch (e) {
-        console.error("❌ Erreur analyse:", e);
-
         if (!isMounted) return;
-
         clearInterval(interval);
-
-        setError("Une erreur est survenue pendant l’analyse.");
+        const msg = e instanceof Error ? e.message : String(e);
+        if (msg.includes("timeout")) {
+          setError("L'analyse a expiré (timeout). Le serveur est peut-être surchargé.");
+        } else if (msg.includes("Network") || msg.includes("ECONNREFUSED")) {
+          setError("Connexion au serveur d'IA impossible. Vérifiez que l'API est démarrée.");
+        } else {
+          setError("Une erreur est survenue pendant l'analyse. Vérifiez l'image et réessayez.");
+        }
       }
     };
 
     runAnalysis();
 
     return () => {
-      console.log("🧹 Nettoyage useAnalysis");
       isMounted = false;
       if (interval) clearInterval(interval);
     };

@@ -1,9 +1,10 @@
 // @see - https://www.electron.build/configuration/configuration
 {
   "$schema": "https://raw.githubusercontent.com/electron-userland/electron-builder/master/packages/app-builder-lib/scheme.json",
-  "appId": "YourAppID",
+  "appId": "com.zoidberg.medical",
   "asar": true,
-  "productName": "YourAppName",
+  "productName": "Zoidberg 2.0",
+  "copyright": "Copyright © 2025 Zoidberg Medical AI",
   "directories": {
     "output": "release/${version}"
   },
@@ -12,18 +13,20 @@
     "dist-electron"
   ],
   "mac": {
+    "category": "public.app-category.medical",
     "target": [
-      "dmg"
+      {
+        "target": "dmg",
+        "arch": ["x64", "arm64"]
+      }
     ],
-    "artifactName": "${productName}-Mac-${version}-Installer.${ext}"
+    "artifactName": "${productName}-Mac-${version}.${ext}"
   },
   "win": {
     "target": [
       {
         "target": "nsis",
-        "arch": [
-          "x64"
-        ]
+        "arch": ["x64"]
       }
     ],
     "artifactName": "${productName}-Windows-${version}-Setup.${ext}"
@@ -35,9 +38,8 @@
     "deleteAppDataOnUninstall": false
   },
   "linux": {
-    "target": [
-      "AppImage"
-    ],
+    "target": ["AppImage", "deb"],
+    "category": "Science",
     "artifactName": "${productName}-Linux-${version}.${ext}"
   }
 }

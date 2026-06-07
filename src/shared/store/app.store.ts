@@ -1,9 +1,6 @@
 import { create } from "zustand";
-import { PredictionResponse } from "@/lib/api.types";
+import type { PredictionResponse, ModelType } from "@/lib/api.types";
 
-/**
- * Fichier uploadé (Electron)
- */
 export type UploadedFile = {
   path: string;
   name: string;
@@ -11,43 +8,40 @@ export type UploadedFile = {
   type: string;
 };
 
-/**
- * Vues de l'application
- */
 export type AppView = "home" | "import" | "analysis" | "result";
+export type ApiStatus = "idle" | "checking" | "ok" | "error";
 
-/**
- * State global de l'application
- */
 interface AppState {
   currentView: AppView;
-
   uploadedFile: UploadedFile | null;
   analysisResult: PredictionResponse | null;
+  selectedModel: ModelType;
+  apiStatus: ApiStatus;
+  apiUrl: string;
 
-  // Actions
   setView: (view: AppView) => void;
   setUploadedFile: (file: UploadedFile | null) => void;
   setAnalysisResult: (result: PredictionResponse | null) => void;
-
-  // Reset global (très utile)
+  setSelectedModel: (model: ModelType) => void;
+  setApiStatus: (status: ApiStatus) => void;
+  setApiUrl: (url: string) => void;
   reset: () => void;
 }
 
-/**
- * Store Zustand
- */
 export const useAppStore = create<AppState>((set) => ({
   currentView: "home",
-
   uploadedFile: null,
   analysisResult: null,
+  selectedModel: "resnet50",
+  apiStatus: "idle",
+  apiUrl: "http://localhost:8000",
 
   setView: (view) => set({ currentView: view }),
-
   setUploadedFile: (file) => set({ uploadedFile: file }),
-
   setAnalysisResult: (result) => set({ analysisResult: result }),
+  setSelectedModel: (model) => set({ selectedModel: model }),
+  setApiStatus: (status) => set({ apiStatus: status }),
+  setApiUrl: (url) => set({ apiUrl: url }),
 
   reset: () =>
     set({

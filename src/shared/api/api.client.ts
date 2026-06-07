@@ -2,48 +2,51 @@ import axios from "axios";
 import fs from "node:fs";
 import FormData from "form-data";
 import type { ModelType, PredictionResponse } from "@/lib/api.types";
+import { getApiUrl } from "../config/api.store";
 
-const API = axios.create({
-  baseURL: "http://127.0.0.1:8000",
-});
+const getAPI = () =>
+  axios.create({
+    baseURL: getApiUrl(),
+    timeout: 30000,
+  });
 
 export const apiClient = {
+  health: async () => {
+    const { data } = await getAPI().get("/health");
+    return data;
+  },
+
   predict: async (filePath: string): Promise<PredictionResponse> => {
     const formData = new FormData();
     formData.append("file", fs.createReadStream(filePath));
-
-    const { data } = await API.post("/predict", formData, {
+    const { data } = await getAPI().post("/predict", formData, {
       headers: formData.getHeaders(),
       maxContentLength: Infinity,
       maxBodyLength: Infinity,
+      timeout: 60000,
     });
-
     return data;
   },
 
   switchModel: async (model: ModelType) => {
-    const { data } = await API.post("/model", model, {
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-
+    const { data } = await getAPI().post("/model", { model_name: model });
     return data;
   },
 
   getModel: async () => {
-    const { data } = await API.get("/model");
+    const { data } = await getAPI().get("/model");
     return data;
   },
 
-  generateReport: async (comment: string): Promise<Buffer> => {
-    const { data } = await API.post("/report", comment, {
-      headers: {
-        "Content-Type": "application/json",
-      },
-      responseType: "arraybuffer",
-    });
-
+  generateReport: async (
+    predictionData: PredictionResponse,
+    comment: string
+  ): Promise<Buffer> => {
+    const { data } = await getAPI().post(
+      "/report",
+      { prediction_data: predictionData, comment },
+      { responseType: "arraybuffer" }
+    );
     return Buffer.from(data);
   },
 };

@@ -2,19 +2,17 @@ import { apiClient } from "../../shared/api/api.client";
 import type { ModelType, PredictionResponse } from "@/lib/api.types";
 
 export const analysisService = {
-  predictImage: async (filePath: string): Promise<PredictionResponse> => {
-    return apiClient.predict(filePath);
-  },
+  health: async () => apiClient.health(),
 
-  generateReport: async (comment: string): Promise<Buffer> => {
-    return apiClient.generateReport(comment);
-  },
+  predictImage: async (filePath: string): Promise<PredictionResponse> =>
+    apiClient.predict(filePath),
 
-  getModel: async () => {
-    return apiClient.getModel();
-  },
+  generateReport: async (
+    predictionData: PredictionResponse,
+    comment: string
+  ): Promise<Buffer> => apiClient.generateReport(predictionData, comment),
 
-  setModel: async (modelName: ModelType) => {
-    return apiClient.switchModel(modelName);
-  },
+  getModel: async () => apiClient.getModel(),
+
+  setModel: async (modelName: ModelType) => apiClient.switchModel(modelName),
 };

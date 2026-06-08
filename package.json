@@ -2,6 +2,10 @@
   "name": "zoidberg-desktop",
   "private": true,
   "version": "2.0.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Youorus/zoiberg-desktop.git"
+  },
   "description": "Application d'aide au diagnostic de pneumonie par radiographie pulmonaire",
   "author": "Zoidberg Medical AI",
   "type": "module",

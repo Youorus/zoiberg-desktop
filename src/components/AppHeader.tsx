@@ -1,6 +1,6 @@
 import { useAppStore } from "@/shared/store/app.store";
 import type { AppView, ApiStatus } from "@/shared/store/app.store";
-import { Activity, Wifi, WifiOff, Loader2 } from "lucide-react";
+import { Wifi, WifiOff, Loader2 } from "lucide-react";
 
 const STEPS: { view: AppView; label: string; step: number }[] = [
   { view: "import", label: "Import", step: 1 },
@@ -45,9 +45,7 @@ export function AppHeader() {
       <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-4 sm:px-6">
         {/* Logo */}
         <div className="flex items-center gap-2.5">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
-            <Activity className="h-4.5 w-4.5 text-primary-foreground" />
-          </div>
+          <img src="/Epitech_Official_Logo.png" alt="Epitech Logo" className="h-8 w-auto" />
           <div className="leading-tight">
             <p className="text-sm font-bold text-foreground tracking-tight">Zoidberg 2.0</p>
             <p className="text-[10px] text-muted-foreground">Aide au diagnostic IA</p>

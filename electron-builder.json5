@@ -5,6 +5,13 @@
   "asar": true,
   "productName": "Zoidberg 2.0",
   "copyright": "Copyright © 2025 Zoidberg Medical AI",
+  "publish": [
+    {
+      "provider": "github",
+      "owner": "Youorus",
+      "repo": "zoiberg-desktop"
+    }
+  ],
   "directories": {
     "output": "release/${version}"
   },

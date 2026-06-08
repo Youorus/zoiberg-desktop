@@ -195,8 +195,8 @@ export function HomePage({ onStart, onRecheck }: HomePageProps) {
           {/* Right: visual */}
           <div className="hidden lg:flex lg:flex-1 lg:justify-center">
             <div className="relative">
-              <div className="flex h-64 w-64 items-center justify-center rounded-3xl bg-primary/8 shadow-inner ring-1 ring-primary/10">
-                <Activity className="h-28 w-28 text-primary/30" />
+              <div className="flex h-64 w-64 items-center justify-center rounded-3xl bg-primary/5 shadow-inner ring-1 ring-primary/10 p-8">
+                <img src="/Epitech_Official_Logo.png" alt="Epitech Logo" className="w-full h-auto opacity-80" />
               </div>
               <div className="absolute -right-4 -top-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-white shadow-lg ring-1 ring-border">
                 <Brain className="h-8 w-8 text-primary" />
